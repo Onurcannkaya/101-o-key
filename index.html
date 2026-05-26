@@ -249,6 +249,81 @@
       animation: fadeIn 0.3s ease;
     }
 
+    /* Round Tracker Component */
+    .round-tracker-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--accent-gold);
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .round-tracker-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .round-tracker-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .round-tracker-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.3px;
+    }
+
+    .round-glow {
+      color: var(--accent-gold);
+      text-shadow: 0 0 10px var(--accent-gold-glow);
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .round-tracker-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-round-adjust {
+      width: 34px;
+      height: 34px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-round-adjust:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-round-adjust:active {
+      transform: scale(0.9);
+    }
+
     /* Dashboard: Leaderboard Section */
     .dashboard {
       background: var(--bg-card);
@@ -1035,6 +1110,20 @@
       İnternet bağlantısı yok. Çevrimdışı çalışılıyor.
     </div>
 
+    <!-- Dynamic Round Tracker Card -->
+    <div class="round-tracker-card">
+      <div class="round-tracker-left">
+        <span class="round-tracker-label">EL TAKİBİ</span>
+        <div class="round-tracker-text">
+          <span id="roundDisplay" class="round-glow">1</span>. EL OYNANIYOR
+        </div>
+      </div>
+      <div class="round-tracker-right">
+        <button class="btn btn-round-adjust" onclick="adjustRound(-1)" title="El Sayısını Azalt">−</button>
+        <button class="btn btn-round-adjust" onclick="adjustRound(1)" title="El Sayısını Artır">+</button>
+      </div>
+    </div>
+
     <!-- Live Leaderboard Section -->
     <section class="dashboard">
       <div class="section-title">
@@ -1068,7 +1157,7 @@
         </svg>
       </div>
       <h3>Emin misiniz?</h3>
-      <p>Ortaklıkların tüm skorları ve el geçmişleri tamamen sıfırlanacaktır. Bu işlem geri alınabilir (Geri Al butonu ile kurtarılabilir).</p>
+      <p>Ortaklıkların tüm skorları, el geçmişleri ve el sayacı tamamen sıfırlanacaktır. Bu işlem geri alınabilir (Geri Al butonu ile kurtarılabilir).</p>
       <div class="modal-buttons">
         <button id="cancelResetBtn" class="btn btn-modal-cancel">Vazgeç</button>
         <button id="confirmResetBtn" class="btn btn-modal-confirm">Evet, Sıfırla</button>
@@ -1113,7 +1202,8 @@
     // App State Configuration
     let state = {
       teams: [],
-      history: [] // Global Undo State Stack
+      currentRound: 1,
+      history: [] // Global Undo State Stack (snapshots of {teams, currentRound})
     };
 
     // Transient UI states for collapsible panels (prevents resets on re-render)
@@ -1161,19 +1251,21 @@
 
     // Save state to Local Storage
     function saveState() {
-      localStorage.setItem('okey_eşli_skor_state_v2', JSON.stringify({
+      localStorage.setItem('okey_eşli_skor_state_v3', JSON.stringify({
         teams: state.teams,
+        currentRound: state.currentRound,
         history: state.history
       }));
     }
 
     // Load state from Local Storage or Initialize
     function loadState() {
-      const saved = localStorage.getItem('okey_eşli_skor_state_v2');
+      const saved = localStorage.getItem('okey_eşli_skor_state_v3');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
           state.teams = parsed.teams || [];
+          state.currentRound = parsed.currentRound !== undefined ? parsed.currentRound : 1;
           state.history = parsed.history || [];
         } catch (e) {
           console.error("Local storage parse error, resetting...", e);
@@ -1193,15 +1285,19 @@
         score: 0,
         history: [] // score changes for this team
       }));
+      state.currentRound = 1;
       state.history = [];
       saveState();
     }
 
     // Save current step to global undo stack before modifying
     function pushToHistory() {
-      // Deep clone current teams list to push to history stack
+      // Store clones of teams and the round counter together
       const teamsClone = JSON.parse(JSON.stringify(state.teams));
-      state.history.push(teamsClone);
+      state.history.push({
+        teams: teamsClone,
+        currentRound: state.currentRound
+      });
       
       // Limit global undo states to 40 entries
       if (state.history.length > 40) {
@@ -1215,7 +1311,8 @@
       
       // Pop last state and restore
       const lastState = state.history.pop();
-      state.teams = lastState;
+      state.teams = lastState.teams;
+      state.currentRound = lastState.currentRound;
       
       triggerHaptic('medium');
       saveState();
@@ -1229,6 +1326,7 @@
         t.score = 0;
         t.history = [];
       });
+      state.currentRound = 1;
       
       // Reset expanded drawers
       state.teams.forEach(t => {
@@ -1254,8 +1352,9 @@
         team.score += amount;
         team.history.push(amount);
         
-        // Dynamic haptics based on type of score
+        // Auto increment round if hand is finished (-101)
         if (amount === -101) {
+          state.currentRound += 1;
           triggerHaptic('success');
         } else if (amount === 202) {
           triggerHaptic('warning');
@@ -1295,6 +1394,18 @@
         render();
       }
     }
+
+    // Manual Round adjustments (+ / -)
+    window.adjustRound = function(diff) {
+      if (state.currentRound + diff < 1) return; // Prevent less than 1
+      
+      pushToHistory();
+      state.currentRound += diff;
+      
+      triggerHaptic('light');
+      saveState();
+      render();
+    };
 
     // Haptic feedback trigger for supported devices
     function triggerHaptic(type) {
@@ -1364,6 +1475,7 @@
 
     function render() {
       renderUndoControls();
+      renderRoundTracker();
       renderLeaderboard();
       renderPlayersGrid();
     }
@@ -1378,6 +1490,14 @@
       } else {
         el.undoBtn.disabled = true;
         el.undoBadge.style.display = 'none';
+      }
+    }
+
+    // Render Round Tracker display
+    function renderRoundTracker() {
+      const display = document.getElementById('roundDisplay');
+      if (display) {
+        display.innerText = state.currentRound;
       }
     }
 
@@ -1516,7 +1636,7 @@
 
           <div>
             <div class="modifier-group">
-              <button class="btn btn-mod btn-minus-101" onclick="updateScore(${team.id}, -101)">-101</button>
+              <button class="btn btn-mod btn-minus-101" onclick="updateScore(${team.id}, -101)">-101 (Bit)</button>
               <button class="btn btn-mod btn-plus-101" onclick="updateScore(${team.id}, 101)">+101</button>
               <button class="btn btn-mod btn-plus-202" onclick="updateScore(${team.id}, 202)">+202</button>
               <button class="btn btn-mod btn-plus-10" onclick="updateScore(${team.id}, 10)">+10</button>
