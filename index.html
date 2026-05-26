@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#0f0f11">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>101 Okey Canlı Skor</title>
+  <title>101 Okey Eşli Canlı Skor</title>
 
   <!-- PWA Inline Manifest -->
-  <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"101 Okey Canlı Skor","short_name":"101 Skor","description":"Mobil öncelikli 101 Okey canlı skor takip uygulaması.","start_url":".","display":"standalone","background_color":"#0f0f11","theme_color":"#ff9800","orientation":"portrait","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22 width=%22512%22 height=%22512%22><rect width=%22512%22 height=%22512%22 rx=%22128%22 fill=%22%2316161a%22/><circle cx=%22256%22 cy=%22256%22 r=%22180%22 fill=%22none%22 stroke=%22%23ff9800%22 stroke-width=%2224%22/><text x=%22256%22 y=%22305%22 font-family=%22system-ui, sans-serif%22 font-size=%22150%22 font-weight=%22800%22 fill=%22%23ff9800%22 text-anchor=%22middle%22>101</text></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}' />
+  <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"101 Okey Eşli Canlı Skor","short_name":"101 Eşli","description":"Mobil öncelikli 101 Okey eşli/ortaklı canlı skor takip uygulaması.","start_url":".","display":"standalone","background_color":"#0f0f11","theme_color":"#ff9800","orientation":"portrait","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22 width=%22512%22 height=%22512%22><rect width=%22512%22 height=%22512%22 rx=%22128%22 fill=%22%2316161a%22/><circle cx=%22256%22 cy=%22256%22 r=%22180%22 fill=%22none%22 stroke=%22%23ff9800%22 stroke-width=%2224%22/><text x=%22256%22 y=%22305%22 font-family=%22system-ui, sans-serif%22 font-size=%22150%22 font-weight=%22800%22 fill=%22%23ff9800%22 text-anchor=%22middle%22>101</text></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}' />
 
   <!-- Google Fonts Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -223,7 +223,7 @@
     /* Main Container Layout */
     .container {
       width: 100%;
-      max-width: 600px;
+      max-width: 650px;
       margin: 0 auto;
       padding: 16px;
       display: flex;
@@ -302,11 +302,6 @@
       border-color: var(--card-border-gold);
       box-shadow: inset 0 0 10px rgba(255, 152, 0, 0.02);
     }
-    
-    .leaderboard-item.rank-3 {
-      background: rgba(255, 82, 82, 0.02);
-      border-color: rgba(255, 82, 82, 0.15);
-    }
 
     .leaderboard-left {
       display: flex;
@@ -333,16 +328,6 @@
       box-shadow: 0 0 8px var(--accent-gold-glow);
     }
 
-    .rank-1 .rank-badge {
-      background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
-      color: #000;
-    }
-
-    .rank-2 .rank-badge {
-      background: linear-gradient(135deg, #b45309 0%, #78350f 100%);
-      color: #fff;
-    }
-
     .player-info-lbl {
       display: flex;
       flex-direction: column;
@@ -360,10 +345,17 @@
       font-size: 1rem;
     }
 
+    .leaderboard-partners {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+
     .leaderboard-diff {
       font-size: 0.7rem;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       font-weight: 500;
+      margin-top: 2px;
     }
 
     .leaderboard-right {
@@ -371,7 +363,7 @@
     }
 
     .leaderboard-score {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
     }
@@ -381,11 +373,18 @@
       text-shadow: 0 0 10px var(--accent-gold-glow);
     }
 
-    /* Player Cards Grid */
+    /* Team Cards Grid */
     .players-grid {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 16px;
+    }
+
+    @media (min-width: 550px) {
+      .players-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
     }
 
     .player-card {
@@ -398,6 +397,9 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .player-card:hover {
@@ -428,9 +430,16 @@
     /* Card Top Header */
     .card-header {
       display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .header-top-row {
+      display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 16px;
+      gap: 10px;
     }
 
     .card-name-wrapper {
@@ -443,7 +452,8 @@
 
     .card-name {
       font-size: 1.2rem;
-      font-weight: 700;
+      font-weight: 800;
+      letter-spacing: 0.3px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -461,16 +471,65 @@
       fill: var(--text-muted);
       opacity: 0.6;
       transition: opacity 0.2s;
+      flex-shrink: 0;
     }
 
     .card-name-wrapper:hover .edit-icon {
       opacity: 1;
     }
 
+    /* Partners badge wrapper */
+    .partners-wrapper {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .partner-badge {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      max-width: 45%;
+    }
+
+    .partner-badge span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .partner-badge:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text-primary);
+    }
+
+    .partner-badge:hover .edit-icon {
+      opacity: 1;
+    }
+
+    .partner-connector {
+      color: var(--accent-gold);
+      font-weight: 800;
+      font-size: 0.9rem;
+      text-shadow: 0 0 6px var(--accent-gold-glow);
+    }
+
     /* Rename Input styling */
     .rename-input {
       font-family: inherit;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 700;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--accent-gold);
@@ -483,12 +542,15 @@
 
     .score-badge-area {
       text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
     }
 
     .score-total {
-      font-size: 2.1rem;
+      font-size: 2.3rem;
       font-weight: 800;
-      line-height: 1;
+      line-height: 0.9;
       font-variant-numeric: tabular-nums;
     }
 
@@ -498,12 +560,12 @@
     }
 
     .score-label {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 700;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
     /* Modifier buttons: Large touch zones */
@@ -613,7 +675,7 @@
 
     /* Round History Log inside card */
     .player-rounds {
-      margin-top: 12px;
+      margin-top: 14px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -803,7 +865,7 @@
       </div>
       <div class="title-area">
         <h1>101 Canlı Skor</h1>
-        <span>Okey Canlı Takip</span>
+        <span>Okey Eşli Takip</span>
       </div>
     </div>
 
@@ -864,7 +926,7 @@
     </main>
 
     <footer>
-      101 Okey Canlı Skor Takip &middot; <a href="#" id="pwainfo">Kurulum Rehberi</a>
+      101 Okey Eşli Skor Takip &middot; <a href="#" id="pwainfo">Kurulum Rehberi</a>
     </footer>
   </div>
 
@@ -877,7 +939,7 @@
         </svg>
       </div>
       <h3>Emin misiniz?</h3>
-      <p>Tüm oyuncuların mevcut skorları ve el geçmişleri tamamen sıfırlanacaktır. Bu işlem geri alınamaz.</p>
+      <p>Ortaklıkların tüm skorları ve el geçmişleri tamamen sıfırlanacaktır. Bu işlem geri alınabilir (Geri Al butonu ile kurtarılabilir).</p>
       <div class="modal-buttons">
         <button id="cancelResetBtn" class="btn btn-modal-cancel">Vazgeç</button>
         <button id="confirmResetBtn" class="btn btn-modal-confirm">Evet, Sıfırla</button>
@@ -904,13 +966,24 @@
   <!-- Core JavaScript Application Logic -->
   <script>
     // ==========================================
-    // KODUN BAŞINDA KOLAYCA DÜZENLENEBİLİR OYUNCU DİZİSİ
+    // KODUN BAŞINDA KOLAYCA DÜZENLENEBİLİR VARSAYILAN TAKIM DİZİSİ
     // ==========================================
-    const DEFAULT_PLAYERS = ["Oyuncu 1", "Oyuncu 2", "Oyuncu 3", "Oyuncu 4"];
+    const DEFAULT_TEAMS = [
+      {
+        id: 1,
+        name: "1. Ortaklık",
+        players: ["Oyuncu 1", "Oyuncu 3"]
+      },
+      {
+        id: 2,
+        name: "2. Ortaklık",
+        players: ["Oyuncu 2", "Oyuncu 4"]
+      }
+    ];
 
     // App State Configuration
     let state = {
-      players: [],
+      teams: [],
       history: [] // Global Undo State Stack
     };
 
@@ -937,19 +1010,19 @@
 
     // Save state to Local Storage
     function saveState() {
-      localStorage.setItem('okey_skor_state_v1', JSON.stringify({
-        players: state.players,
+      localStorage.setItem('okey_eşli_skor_state_v1', JSON.stringify({
+        teams: state.teams,
         history: state.history
       }));
     }
 
     // Load state from Local Storage or Initialize
     function loadState() {
-      const saved = localStorage.getItem('okey_skor_state_v1');
+      const saved = localStorage.getItem('okey_eşli_skor_state_v1');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          state.players = parsed.players || [];
+          state.teams = parsed.teams || [];
           state.history = parsed.history || [];
         } catch (e) {
           console.error("Local storage parse error, resetting...", e);
@@ -962,11 +1035,12 @@
 
     // Baseline initializer
     function initializeNewState() {
-      state.players = DEFAULT_PLAYERS.map((name, index) => ({
-        id: index,
-        name: name,
+      state.teams = DEFAULT_TEAMS.map((team, index) => ({
+        id: team.id,
+        name: team.name,
+        players: [...team.players],
         score: 0,
-        history: [] // score changes for this player
+        history: [] // score changes for this team
       }));
       state.history = [];
       saveState();
@@ -974,9 +1048,9 @@
 
     // Save current step to global undo stack before modifying
     function pushToHistory() {
-      // Deep clone current players list to push to history stack
-      const playersClone = JSON.parse(JSON.stringify(state.players));
-      state.history.push(playersClone);
+      // Deep clone current teams list to push to history stack
+      const teamsClone = JSON.parse(JSON.stringify(state.teams));
+      state.history.push(teamsClone);
       
       // Limit global undo states to 40 entries
       if (state.history.length > 40) {
@@ -990,7 +1064,7 @@
       
       // Pop last state and restore
       const lastState = state.history.pop();
-      state.players = lastState;
+      state.teams = lastState;
       
       triggerHaptic('medium');
       saveState();
@@ -1000,9 +1074,9 @@
     // Reset scores to 0
     function resetScores() {
       pushToHistory(); // Make reset action undoable! Safety feature.
-      state.players.forEach(p => {
-        p.score = 0;
-        p.history = [];
+      state.teams.forEach(t => {
+        t.score = 0;
+        t.history = [];
       });
       saveState();
       render();
@@ -1010,15 +1084,15 @@
     }
 
     // Update individual score
-    function updateScore(playerId, amount) {
+    function updateScore(teamId, amount) {
       if (isNaN(amount) || amount === 0) return;
       
       pushToHistory();
       
-      const player = state.players.find(p => p.id === playerId);
-      if (player) {
-        player.score += amount;
-        player.history.push(amount);
+      const team = state.teams.find(t => t.id === teamId);
+      if (team) {
+        team.score += amount;
+        team.history.push(amount);
         
         // Dynamic haptics based on type of score
         if (amount === -101) {
@@ -1034,15 +1108,29 @@
       }
     }
 
-    // Rename player
-    function renamePlayer(playerId, newName) {
+    // Rename Team Title
+    function renameTeam(teamId, newName) {
       const cleanName = newName.trim();
       if (!cleanName) return;
       
       pushToHistory();
-      const player = state.players.find(p => p.id === playerId);
-      if (player) {
-        player.name = cleanName;
+      const team = state.teams.find(t => t.id === teamId);
+      if (team) {
+        team.name = cleanName;
+        saveState();
+        render();
+      }
+    }
+
+    // Rename individual player inside a team
+    function renamePartner(teamId, partnerIndex, newName) {
+      const cleanName = newName.trim();
+      if (!cleanName) return;
+
+      pushToHistory();
+      const team = state.teams.find(t => t.id === teamId);
+      if (team && team.players && team.players[partnerIndex] !== undefined) {
+        team.players[partnerIndex] = cleanName;
         saveState();
         render();
       }
@@ -1092,24 +1180,19 @@
 
     // Render top sorted leaderboard dashboard
     function renderLeaderboard() {
-      // Clone players list to sort without mutating state order
-      const sortedPlayers = [...state.players].sort((a, b) => a.score - b.score);
-      const minScore = sortedPlayers[0].score;
-      const maxScore = sortedPlayers[sortedPlayers.length - 1].score;
+      // Clone teams list to sort without mutating state order
+      const sortedTeams = [...state.teams].sort((a, b) => a.score - b.score);
+      const minScore = sortedTeams[0].score;
 
       el.leaderboard.innerHTML = '';
       
-      sortedPlayers.forEach((player, rank) => {
+      sortedTeams.forEach((team, rank) => {
         const isLeader = rank === 0;
-        const diff = player.score - minScore;
-        const diffText = isLeader ? 'Lider' : `+${diff} fark`;
+        const diff = team.score - minScore;
+        const diffText = isLeader ? 'Lider Ortaklık 👑' : `+${diff} fark`;
         
-        // Custom Rank Crown/Medal/Marker Emojis
-        let statusEmoji = '';
-        if (rank === 0) statusEmoji = '👑';
-        else if (rank === 1) statusEmoji = '🥈';
-        else if (rank === 2) statusEmoji = '🥉';
-        else if (rank === sortedPlayers.length - 1) statusEmoji = '⚠️';
+        // Custom Rank Medals
+        let statusEmoji = isLeader ? '👑' : '🥈';
 
         const item = document.createElement('div');
         item.className = `leaderboard-item rank-${rank}`;
@@ -1118,32 +1201,35 @@
             <div class="rank-badge">${rank + 1}</div>
             <div class="player-info-lbl">
               <span class="leaderboard-name">
-                ${escapeHTML(player.name)} 
-                ${statusEmoji ? `<span class="status-icon">${statusEmoji}</span>` : ''}
+                ${escapeHTML(team.name)} 
+                <span class="status-icon">${statusEmoji}</span>
               </span>
-              <span class="leaderboard-diff">${diffText}</span>
+              <span class="leaderboard-partners">
+                (${escapeHTML(team.players[0])} & ${escapeHTML(team.players[1])})
+              </span>
+              <span class="leaderboard-diff" style="color: ${isLeader ? 'var(--accent-gold)' : 'var(--text-muted)'};">${diffText}</span>
             </div>
           </div>
           <div class="leaderboard-right">
-            <span class="leaderboard-score">${player.score}</span>
+            <span class="leaderboard-score">${team.score}</span>
           </div>
         `;
         el.leaderboard.appendChild(item);
       });
     }
 
-    // Render interactive player cards
+    // Render interactive team cards
     function renderPlayersGrid() {
-      const sortedByScore = [...state.players].sort((a, b) => a.score - b.score);
+      const sortedByScore = [...state.teams].sort((a, b) => a.score - b.score);
       const minScore = sortedByScore[0].score;
       const maxScore = sortedByScore[sortedByScore.length - 1].score;
 
       el.playersGrid.innerHTML = '';
 
-      state.players.forEach(player => {
-        const isWinner = player.score === minScore;
-        const isLoser = player.score === maxScore && player.score > minScore;
-        const isHeavyDebt = isLoser && player.score >= 400;
+      state.teams.forEach(team => {
+        const isWinner = team.score === minScore;
+        const isLoser = team.score === maxScore && team.score > minScore;
+        const isHeavyDebt = isLoser && team.score >= 400;
 
         let cardClass = 'player-card';
         if (isWinner) cardClass += ' is-winner';
@@ -1152,13 +1238,13 @@
 
         const card = document.createElement('article');
         card.className = cardClass;
-        card.setAttribute('data-id', player.id);
+        card.setAttribute('data-id', team.id);
 
         // Build history log tags
         let historyTagsHTML = '';
-        if (player.history.length > 0) {
+        if (team.history.length > 0) {
           // Show last 5 entries
-          const recentLogs = player.history.slice(-5);
+          const recentLogs = team.history.slice(-5);
           historyTagsHTML = `
             <div class="player-rounds">
               <span class="history-title">Son El:</span>
@@ -1175,38 +1261,58 @@
 
         card.innerHTML = `
           <div class="card-header">
-            <div class="card-name-wrapper" onclick="startRename(${player.id})">
-              <span class="card-name" id="name-${player.id}">${escapeHTML(player.name)}</span>
-              <!-- Pencil Icon SVG -->
-              <svg class="edit-icon" viewBox="0 0 24 24">
-                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-              </svg>
+            <div class="header-top-row">
+              <div class="card-name-wrapper" onclick="startRenameTeam(${team.id})">
+                <span class="card-name" id="team-name-${team.id}">${escapeHTML(team.name)}</span>
+                <!-- Pencil Icon SVG -->
+                <svg class="edit-icon" viewBox="0 0 24 24">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+              </div>
+              <div class="score-badge-area">
+                <div class="score-total">${team.score}</div>
+                <div class="score-label">ORTAK SKOR</div>
+              </div>
             </div>
-            <div class="score-badge-area">
-              <div class="score-total">${player.score}</div>
-              <div class="score-label">TOPLAM CEZA</div>
+            
+            <div class="partners-wrapper">
+              <div class="partner-badge" id="partner-${team.id}-0" onclick="startRenamePartner(${team.id}, 0)">
+                <span>${escapeHTML(team.players[0])}</span>
+                <svg class="edit-icon" viewBox="0 0 24 24">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+              </div>
+              <span class="partner-connector">&amp;</span>
+              <div class="partner-badge" id="partner-${team.id}-1" onclick="startRenamePartner(${team.id}, 1)">
+                <span>${escapeHTML(team.players[1])}</span>
+                <svg class="edit-icon" viewBox="0 0 24 24">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+              </div>
             </div>
           </div>
 
-          <div class="modifier-group">
-            <button class="btn btn-mod btn-minus-101" onclick="updateScore(${player.id}, -101)">-101</button>
-            <button class="btn btn-mod btn-plus-101" onclick="updateScore(${player.id}, 101)">+101</button>
-            <button class="btn btn-mod btn-plus-202" onclick="updateScore(${player.id}, 202)">+202</button>
-            <button class="btn btn-mod btn-plus-10" onclick="updateScore(${player.id}, 10)">+10</button>
-          </div>
+          <div>
+            <div class="modifier-group">
+              <button class="btn btn-mod btn-minus-101" onclick="updateScore(${team.id}, -101)">-101</button>
+              <button class="btn btn-mod btn-plus-101" onclick="updateScore(${team.id}, 101)">+101</button>
+              <button class="btn btn-mod btn-plus-202" onclick="updateScore(${team.id}, 202)">+202</button>
+              <button class="btn btn-mod btn-plus-10" onclick="updateScore(${team.id}, 10)">+10</button>
+            </div>
 
-          <div class="input-group">
-            <input type="number" 
-                   class="num-input" 
-                   id="input-${player.id}" 
-                   placeholder="El sonu sayısı girin..." 
-                   pattern="[0-9]*" 
-                   inputmode="numeric"
-                   onkeydown="handleManualInputKey(event, ${player.id})">
-            <button class="btn btn-add" onclick="submitManualScore(${player.id})">Ekle</button>
-          </div>
+            <div class="input-group">
+              <input type="number" 
+                     class="num-input" 
+                     id="input-${team.id}" 
+                     placeholder="Ortak ceza sayısı..." 
+                     pattern="[0-9]*" 
+                     inputmode="numeric"
+                     onkeydown="handleManualInputKey(event, ${team.id})">
+              <button class="btn btn-add" onclick="submitManualScore(${team.id})">Ekle</button>
+            </div>
 
-          ${historyTagsHTML}
+            ${historyTagsHTML}
+          </div>
         `;
         el.playersGrid.appendChild(card);
       });
@@ -1217,8 +1323,8 @@
     // ==========================================
 
     // Manual input submission
-    window.submitManualScore = function(playerId) {
-      const input = document.getElementById(`input-${playerId}`);
+    window.submitManualScore = function(teamId) {
+      const input = document.getElementById(`input-${teamId}`);
       if (!input) return;
 
       const val = parseInt(input.value, 10);
@@ -1227,7 +1333,7 @@
         return;
       }
 
-      updateScore(playerId, val);
+      updateScore(teamId, val);
       input.value = ''; // Clean input
       
       // Blur keyboard on mobile
@@ -1235,22 +1341,19 @@
     };
 
     // Handle manual input Enter key
-    window.handleManualInputKey = function(event, playerId) {
+    window.handleManualInputKey = function(event, teamId) {
       if (event.key === 'Enter') {
-        submitManualScore(playerId);
+        submitManualScore(teamId);
       }
     };
 
-    // Inline Rename Mechanism
-    window.startRename = function(playerId) {
-      const nameEl = document.getElementById(`name-${playerId}`);
+    // Inline Rename Team Title
+    window.startRenameTeam = function(teamId) {
+      const nameEl = document.getElementById(`team-name-${teamId}`);
       const parent = nameEl.parentElement;
       const originalName = nameEl.innerText;
       
-      // Avoid starting multiple rename operations
       if (parent.querySelector('input')) return;
-
-      // Disable the click behavior temporarily
       parent.removeAttribute('onclick');
 
       const input = document.createElement('input');
@@ -1259,30 +1362,72 @@
       input.value = originalName;
       input.maxLength = 18;
 
-      // Replace wrapper children
       parent.innerHTML = '';
       parent.appendChild(input);
       input.focus();
       input.select();
 
-      // Finish rename helper
       const finishRename = () => {
         const val = input.value.trim();
         if (val && val !== originalName) {
-          renamePlayer(playerId, val);
+          renameTeam(teamId, val);
         } else {
-          // Re-render to restore original UI state
           render();
         }
       };
 
-      // Events
       input.addEventListener('blur', finishRename);
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-          input.blur(); // Triggers blur/finish
+          input.blur();
         } else if (e.key === 'Escape') {
-          // Re-render without saving
+          render();
+        }
+      });
+    };
+
+    // Inline Rename Individual Partner
+    window.startRenamePartner = function(teamId, partnerIndex) {
+      const badgeId = `partner-${teamId}-${partnerIndex}`;
+      const badgeEl = document.getElementById(badgeId);
+      if (!badgeEl || badgeEl.querySelector('input')) return;
+
+      const spanEl = badgeEl.querySelector('span');
+      const originalName = spanEl.innerText;
+      badgeEl.removeAttribute('onclick');
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'rename-input';
+      input.style.fontSize = '0.8rem';
+      input.style.padding = '0 4px';
+      input.style.height = '100%';
+      input.style.border = 'none';
+      input.style.background = 'transparent';
+      input.style.color = '#fff';
+      input.style.textAlign = 'center';
+      input.value = originalName;
+      input.maxLength = 16;
+
+      badgeEl.innerHTML = '';
+      badgeEl.appendChild(input);
+      input.focus();
+      input.select();
+
+      const finishRename = () => {
+        const val = input.value.trim();
+        if (val && val !== originalName) {
+          renamePartner(teamId, partnerIndex, val);
+        } else {
+          render();
+        }
+      };
+
+      input.addEventListener('blur', finishRename);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          input.blur();
+        } else if (e.key === 'Escape') {
           render();
         }
       });
@@ -1381,20 +1526,15 @@
     // PWA Install prompt interceptor
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      // Stash the event so it can be triggered later.
       deferredPrompt = e;
-      // Update UI to show the install button in header
       el.installBtn.style.display = 'inline-flex';
     });
 
     el.installBtn.addEventListener('click', () => {
       if (!deferredPrompt) return;
       triggerHaptic('medium');
-      // Show the install prompt
       deferredPrompt.prompt();
-      // Wait for the user to respond to the prompt
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
           console.log('User accepted the install prompt');
