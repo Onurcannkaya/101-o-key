@@ -673,6 +673,135 @@
       box-shadow: 0 4px 12px rgba(255,255,255,0.1);
     }
 
+    /* Yandan Taş Cezası Helper UI */
+    .btn-penalty-toggle {
+      background: transparent;
+      border: 1px dashed rgba(255, 152, 0, 0.25);
+      color: var(--accent-gold);
+      width: 100%;
+      height: 36px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-penalty-toggle:hover {
+      background: rgba(255, 152, 0, 0.05);
+      border-color: var(--accent-gold);
+    }
+
+    .btn-penalty-toggle.is-open {
+      background: rgba(255, 152, 0, 0.1);
+      border-style: solid;
+      border-color: rgba(255, 152, 0, 0.4);
+    }
+
+    .penalty-panel {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      display: none; /* Controlled dynamically */
+      flex-direction: column;
+      gap: 8px;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .penalty-panel-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .penalty-panel-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .select-tile {
+      height: 28px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      color: var(--text-primary);
+      padding: 0 8px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      outline: none;
+      cursor: pointer;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .select-tile:focus {
+      border-color: var(--accent-gold);
+    }
+
+    .segmented-control {
+      display: flex;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      padding: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      flex: 1;
+      max-width: 140px;
+    }
+
+    .btn-segment {
+      flex: 1;
+      height: 24px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-segment.is-active {
+      background: var(--accent-gold-gradient);
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 1px 4px rgba(255, 152, 0, 0.2);
+    }
+
+    .btn-penalty-apply {
+      height: 30px;
+      width: 100%;
+      background: var(--accent-gold-gradient);
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 6px;
+      margin-top: 2px;
+      box-shadow: 0 2px 6px var(--accent-gold-glow);
+    }
+
+    .btn-penalty-apply:hover {
+      box-shadow: 0 2px 10px rgba(255, 152, 0, 0.35);
+    }
+
     /* Round History Log inside card */
     .player-rounds {
       margin-top: 14px;
@@ -987,6 +1116,13 @@
       history: [] // Global Undo State Stack
     };
 
+    // Transient UI states for collapsible panels (prevents resets on re-render)
+    let uiState = {
+      activePanels: {},  // teamId -> boolean (true if open)
+      selectedTiles: {}, // teamId -> tile number (1-13)
+      openTypes: {}      // teamId -> 'straight' or 'double'
+    };
+
     // DOM Elements Cache
     const el = {
       leaderboard: document.getElementById('leaderboard'),
@@ -1005,12 +1141,27 @@
     };
 
     // ==========================================
+    // TRANSIENT UI STATE INIT HELPER
+    // ==========================================
+    function initUiState(teamId) {
+      if (uiState.activePanels[teamId] === undefined) {
+        uiState.activePanels[teamId] = false;
+      }
+      if (uiState.selectedTiles[teamId] === undefined) {
+        uiState.selectedTiles[teamId] = 1;
+      }
+      if (uiState.openTypes[teamId] === undefined) {
+        uiState.openTypes[teamId] = 'straight'; // 'straight' (Düz) or 'double' (Çift)
+      }
+    }
+
+    // ==========================================
     // STATE MANAGEMENT METHODS
     // ==========================================
 
     // Save state to Local Storage
     function saveState() {
-      localStorage.setItem('okey_eşli_skor_state_v1', JSON.stringify({
+      localStorage.setItem('okey_eşli_skor_state_v2', JSON.stringify({
         teams: state.teams,
         history: state.history
       }));
@@ -1018,7 +1169,7 @@
 
     // Load state from Local Storage or Initialize
     function loadState() {
-      const saved = localStorage.getItem('okey_eşli_skor_state_v1');
+      const saved = localStorage.getItem('okey_eşli_skor_state_v2');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
@@ -1078,6 +1229,15 @@
         t.score = 0;
         t.history = [];
       });
+      
+      // Reset expanded drawers
+      state.teams.forEach(t => {
+        initUiState(t.id);
+        uiState.activePanels[t.id] = false;
+        uiState.selectedTiles[t.id] = 1;
+        uiState.openTypes[t.id] = 'straight';
+      });
+
       saveState();
       render();
       triggerHaptic('warning');
@@ -1156,6 +1316,49 @@
     }
 
     // ==========================================
+    // SIDE TILE PENALTY HELPER ACTIONS
+    // ==========================================
+
+    window.togglePenaltyPanel = function(teamId) {
+      initUiState(teamId);
+      uiState.activePanels[teamId] = !uiState.activePanels[teamId];
+      triggerHaptic('light');
+      render();
+    };
+
+    window.handleTileChange = function(teamId, value) {
+      initUiState(teamId);
+      uiState.selectedTiles[teamId] = parseInt(value, 10);
+    };
+
+    window.setOpenType = function(teamId, type) {
+      initUiState(teamId);
+      uiState.openTypes[teamId] = type;
+      triggerHaptic('light');
+      render();
+    };
+
+    window.applySideTilePenalty = function(teamId) {
+      initUiState(teamId);
+      const tileVal = uiState.selectedTiles[teamId];
+      const type = uiState.openTypes[teamId];
+
+      // Multiplier rule: Straight = x10, Double = x2
+      const multiplier = type === 'straight' ? 10 : 2;
+      const penalty = tileVal * multiplier;
+
+      // Add to shared scores
+      updateScore(teamId, penalty);
+
+      // Reset panel state for this team
+      uiState.activePanels[teamId] = false;
+      uiState.selectedTiles[teamId] = 1;
+      uiState.openTypes[teamId] = 'straight';
+
+      render();
+    };
+
+    // ==========================================
     // UI RENDERING ENGINE
     // ==========================================
 
@@ -1205,7 +1408,7 @@
                 <span class="status-icon">${statusEmoji}</span>
               </span>
               <span class="leaderboard-partners">
-                (${escapeHTML(team.players[0])} & ${escapeHTML(team.players[1])})
+                (${escapeHTML(team.players[0])} &amp; ${escapeHTML(team.players[1])})
               </span>
               <span class="leaderboard-diff" style="color: ${isLeader ? 'var(--accent-gold)' : 'var(--text-muted)'};">${diffText}</span>
             </div>
@@ -1239,6 +1442,25 @@
         const card = document.createElement('article');
         card.className = cardClass;
         card.setAttribute('data-id', team.id);
+
+        // Fetch transient UI state variables for the side tile panel
+        initUiState(team.id);
+        const isPanelOpen = uiState.activePanels[team.id];
+        const selectedTile = uiState.selectedTiles[team.id];
+        const openType = uiState.openTypes[team.id];
+
+        const panelOpenClass = isPanelOpen ? 'is-open' : '';
+        const panelDisplayStyle = isPanelOpen ? 'flex' : 'none';
+
+        const segmentStraightActive = openType === 'straight' ? 'is-active' : '';
+        const segmentDoubleActive = openType === 'double' ? 'is-active' : '';
+
+        // Draw 1-13 options dynamically
+        let selectOptionsHTML = '';
+        for (let i = 1; i <= 13; i++) {
+          const isSelected = i === selectedTile ? 'selected' : '';
+          selectOptionsHTML += `<option value="${i}" ${isSelected}>${i}</option>`;
+        }
 
         // Build history log tags
         let historyTagsHTML = '';
@@ -1309,6 +1531,32 @@
                      inputmode="numeric"
                      onkeydown="handleManualInputKey(event, ${team.id})">
               <button class="btn btn-add" onclick="submitManualScore(${team.id})">Ekle</button>
+            </div>
+
+            <!-- Collapsible Side Tile Penalty Toggle Button -->
+            <button class="btn-penalty-toggle ${panelOpenClass}" onclick="togglePenaltyPanel(${team.id})">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+              Yandan Taş Alındı
+            </button>
+
+            <!-- Collapsible Panel Drawer -->
+            <div class="penalty-panel" style="display: ${panelDisplayStyle}">
+              <div class="penalty-panel-row">
+                <span class="penalty-panel-label">Alınan Taş:</span>
+                <select class="select-tile" onchange="handleTileChange(${team.id}, this.value)">
+                  ${selectOptionsHTML}
+                </select>
+              </div>
+              <div class="penalty-panel-row">
+                <span class="penalty-panel-label">Açış Türü:</span>
+                <div class="segmented-control">
+                  <button class="btn-segment ${segmentStraightActive}" onclick="setOpenType(${team.id}, 'straight')">Düz (x10)</button>
+                  <button class="btn-segment ${segmentDoubleActive}" onclick="setOpenType(${team.id}, 'double')">Çift (x2)</button>
+                </div>
+              </div>
+              <button class="btn btn-penalty-apply" onclick="applySideTilePenalty(${team.id})">Cezayı Uygula</button>
             </div>
 
             ${historyTagsHTML}
