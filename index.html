@@ -644,12 +644,6 @@
       gap: 8px;
     }
 
-    .modifier-row-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-    }
-
     .btn-mod {
       height: 42px;
       font-size: 0.9rem;
@@ -664,53 +658,34 @@
     }
 
     /* Specific button aesthetics */
-    .btn-minus-101 {
+    .btn-minus-100-bit {
       background: rgba(0, 230, 118, 0.1);
       border: 1px solid rgba(0, 230, 118, 0.2);
       color: var(--success-green);
     }
-    .btn-minus-101:hover {
+    .btn-minus-100-bit:hover {
       background: rgba(0, 230, 118, 0.16);
       box-shadow: 0 0 10px var(--success-glow);
     }
 
-    .btn-minus-100 {
+    .btn-minus-100-rekor {
       background: rgba(0, 230, 118, 0.07);
       border: 1px solid rgba(0, 230, 118, 0.2);
       color: var(--success-green);
     }
-    .btn-minus-100:hover {
+    .btn-minus-100-rekor:hover {
       background: rgba(0, 230, 118, 0.14);
       box-shadow: 0 0 10px var(--success-glow);
     }
 
-    .btn-plus-101 {
-      background: rgba(255, 152, 0, 0.1);
-      border: 1px solid rgba(255, 152, 0, 0.2);
-      color: var(--accent-gold);
-    }
-    .btn-plus-101:hover {
-      background: rgba(255, 152, 0, 0.16);
-      box-shadow: 0 0 10px var(--accent-gold-glow);
-    }
-
-    .btn-plus-202 {
+    .btn-plus-400 {
       background: rgba(255, 82, 82, 0.1);
       border: 1px solid rgba(255, 82, 82, 0.2);
       color: var(--danger-red);
     }
-    .btn-plus-202:hover {
+    .btn-plus-400:hover {
       background: rgba(255, 82, 82, 0.16);
       box-shadow: 0 0 10px var(--danger-glow);
-    }
-
-    .btn-plus-10 {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #e2e8f0;
-    }
-    .btn-plus-10:hover {
-      background: rgba(255, 255, 255, 0.08);
     }
 
     /* Manual Input styling */
@@ -755,66 +730,6 @@
     .btn-add:hover {
       background: #ffffff;
       box-shadow: 0 4px 12px rgba(255,255,255,0.1);
-    }
-
-    /* Yandan Taş Cezası Helper UI */
-    .btn-penalty-toggle {
-      background: transparent;
-      border: 1px dashed rgba(255, 152, 0, 0.25);
-      color: var(--accent-gold);
-      width: 100%;
-      height: 36px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      margin-top: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-penalty-toggle:hover {
-      background: rgba(255, 152, 0, 0.05);
-      border-color: var(--accent-gold);
-    }
-
-    .btn-penalty-toggle.is-open {
-      background: rgba(255, 152, 0, 0.1);
-      border-style: solid;
-      border-color: rgba(255, 152, 0, 0.4);
-    }
-
-    .penalty-panel {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-top: 8px;
-      display: none; /* Controlled dynamically */
-      flex-direction: column;
-      gap: 8px;
-      animation: slideDown 0.2s ease-out;
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .penalty-panel-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .penalty-panel-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
     /* Round History Log inside card */
@@ -1141,11 +1056,6 @@
       history: [] // Global Undo State Stack (snapshots of {teams, mevcutEl})
     };
 
-    // Transient UI states for collapsible panels (prevents resets on re-render)
-    let uiState = {
-      activePanels: {}  // teamId -> boolean (true if open)
-    };
-
     // DOM Elements Cache
     const el = {
       leaderboard: document.getElementById('leaderboard'),
@@ -1162,15 +1072,6 @@
       offlineBadge: document.getElementById('offlineBadge'),
       installBtn: document.getElementById('installBtn')
     };
-
-    // ==========================================
-    // TRANSIENT UI STATE INIT HELPER
-    // ==========================================
-    function initUiState(teamId) {
-      if (uiState.activePanels[teamId] === undefined) {
-        uiState.activePanels[teamId] = false;
-      }
-    }
 
     // ==========================================
     // STATE MANAGEMENT METHODS
@@ -1254,12 +1155,6 @@
         t.history = [];
       });
       state.mevcutEl = 1;
-      
-      // Reset expanded drawers
-      state.teams.forEach(t => {
-        initUiState(t.id);
-        uiState.activePanels[t.id] = false;
-      });
 
       saveState();
       render();
@@ -1267,7 +1162,7 @@
     }
 
     // Update individual score
-    function updateScore(teamId, amount) {
+    function updateScore(teamId, amount, isBit = false) {
       if (isNaN(amount) || amount === 0) return;
       
       pushToHistory();
@@ -1277,14 +1172,14 @@
         team.score += amount;
         team.history.push(amount);
         
-        // Auto increment round ONLY if hand is finished with -101
-        if (amount === -101) {
+        // Auto increment round ONLY if hand is finished with Bit (-100)
+        if (amount === -100 && isBit) {
           state.mevcutEl += 1;
           triggerHaptic('success');
         } else if (amount === -100) {
           triggerHaptic('success'); // Rekor trigger (does NOT increment round)
-        } else if (amount === 202) {
-          triggerHaptic('warning');
+        } else if (amount === 400) {
+          triggerHaptic('warning'); // +400 penalty
         } else {
           triggerHaptic('light');
         }
@@ -1352,43 +1247,6 @@
         console.warn("Haptic vibrator error", err);
       }
     }
-
-    // ==========================================
-    // SIDE TILE PENALTY HELPER ACTIONS
-    // ==========================================
-
-    window.togglePenaltyPanel = function(teamId) {
-      initUiState(teamId);
-      uiState.activePanels[teamId] = !uiState.activePanels[teamId];
-      triggerHaptic('light');
-      render();
-    };
-
-    window.applySideTilePenalty = function(teamId) {
-      const input = document.getElementById(`penalty-input-${teamId}`);
-      if (!input) return;
-
-      const val = parseInt(input.value, 10);
-      if (isNaN(val) || val === 0) {
-        input.focus();
-        return;
-      }
-
-      // Add custom computed score directly
-      updateScore(teamId, val);
-
-      // Reset panel input and close drawer
-      input.value = '';
-      uiState.activePanels[teamId] = false;
-
-      render();
-    };
-
-    window.handlePenaltyInputKey = function(event, teamId) {
-      if (event.key === 'Enter') {
-        applySideTilePenalty(teamId);
-      }
-    };
 
     // ==========================================
     // UI RENDERING ENGINE
@@ -1484,13 +1342,6 @@
         card.className = cardClass;
         card.setAttribute('data-id', team.id);
 
-        // Fetch transient UI state variables for the side tile panel
-        initUiState(team.id);
-        const isPanelOpen = uiState.activePanels[team.id];
-
-        const panelOpenClass = isPanelOpen ? 'is-open' : '';
-        const panelDisplayStyle = isPanelOpen ? 'flex' : 'none';
-
         // Build history log tags
         let historyTagsHTML = '';
         if (team.history.length > 0) {
@@ -1501,7 +1352,7 @@
               <span class="history-title">Son El:</span>
               ${recentLogs.map(score => {
                 const isNeg = score < 0;
-                const isHeavy = score >= 101;
+                const isHeavy = score >= 100;
                 const tagClass = isNeg ? 'tag-neg' : (isHeavy ? 'tag-large-pos' : 'tag-pos');
                 const sign = score > 0 ? '+' : '';
                 return `<span class="round-tag ${tagClass}">${sign}${score}</span>`;
@@ -1547,14 +1398,12 @@
             <div class="modifier-group">
               <!-- Row 1: Deductions (Green theme) -->
               <div class="modifier-row">
-                <button class="btn btn-mod btn-minus-101" onclick="updateScore(${team.id}, -101)">-101 (Bit)</button>
-                <button class="btn btn-mod btn-minus-100" onclick="updateScore(${team.id}, -100)">-100 (Rekor)</button>
+                <button class="btn btn-mod btn-minus-100-bit" onclick="updateScore(${team.id}, -100, true)">-100 (Bit)</button>
+                <button class="btn btn-mod btn-minus-100-rekor" onclick="updateScore(${team.id}, -100, false)">-100 (Rekor)</button>
               </div>
               <!-- Row 2: Additions -->
               <div class="modifier-row-3">
-                <button class="btn btn-mod btn-plus-101" onclick="updateScore(${team.id}, 101)">+101</button>
-                <button class="btn btn-mod btn-plus-202" onclick="updateScore(${team.id}, 202)">+202</button>
-                <button class="btn btn-mod btn-plus-10" onclick="updateScore(${team.id}, 10)">+10</button>
+                <button class="btn btn-mod btn-plus-400" style="grid-column: span 3; font-weight: 700;" onclick="updateScore(${team.id}, 400)">+400 Ceza</button>
               </div>
             </div>
 
@@ -1562,37 +1411,11 @@
               <input type="number" 
                      class="num-input" 
                      id="input-${team.id}" 
-                     placeholder="Ortak ceza sayısı..." 
+                     placeholder="Ortak sayı veya ceza girin..." 
                      pattern="[0-9]*" 
                      inputmode="numeric"
                      onkeydown="handleManualInputKey(event, ${team.id})">
               <button class="btn btn-add" onclick="submitManualScore(${team.id})">Ekle</button>
-            </div>
-
-            <!-- Collapsible Side Tile Penalty Toggle Button -->
-            <button class="btn-penalty-toggle ${panelOpenClass}" onclick="togglePenaltyPanel(${team.id})">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-              </svg>
-              Yandan Taş Alındı
-            </button>
-
-            <!-- Collapsible Panel Drawer (Simplified Manual Entry) -->
-            <div class="penalty-panel" style="display: ${panelDisplayStyle}">
-              <div class="penalty-panel-row" style="flex-direction: column; align-items: stretch; gap: 8px;">
-                <span class="penalty-panel-label" style="text-align: left; margin-bottom: 2px;">Ceza Puanı Yaz:</span>
-                <div style="display: flex; gap: 8px; width: 100%;">
-                  <input type="number" 
-                         class="num-input" 
-                         id="penalty-input-${team.id}" 
-                         placeholder="Puanı girin..." 
-                         pattern="[0-9]*" 
-                         inputmode="numeric"
-                         onkeydown="handlePenaltyInputKey(event, ${team.id})"
-                         style="height: 38px;">
-                  <button class="btn btn-add" style="height: 38px; padding: 0 16px;" onclick="applySideTilePenalty(${team.id})">Ekle</button>
-                </div>
-              </div>
             </div>
 
             ${historyTagsHTML}
