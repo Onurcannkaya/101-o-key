@@ -10,6 +10,7 @@
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --accent: #ff9800;
+            --accent-soft: rgba(255, 152, 0, 0.15);
             --text: #ffffff;
             --text-dim: #b3b3b3;
             --danger: #ef5350;
@@ -21,6 +22,8 @@
         h1 { font-size: 1.5rem; color: var(--accent); }
         .btn { background: var(--accent); border: none; padding: 10px 15px; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; }
         .btn-danger { background: var(--danger); color: #fff; }
+        .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid #333; }
+        .btn-ghost:active { background: #2a2a2a; }
 
         /* Dashboard / Siralama */
         .dashboard { background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
@@ -33,7 +36,10 @@
         .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .player-card { background: var(--card-bg); padding: 15px; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; }
         .player-name { font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .player-name input { width: 100%; background: transparent; border: none; color: var(--text); font-size: 1.1rem; font-weight: bold; outline: none; }
         .player-score { font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+        .player-actions { display: flex; gap: 8px; }
+        .player-actions .btn-sm { flex: 1; }
 
         .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
         .btn-sm { background: #333; color: #fff; border: none; padding: 8px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; }
@@ -41,6 +47,27 @@
 
         .manual-input { display: flex; gap: 5px; margin-top: 5px; }
         .manual-input input { flex: 1; background: #2b2b2b; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; text-align: center; width: 50px; }
+
+        .section { background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .section h2 { font-size: 1.1rem; margin-bottom: 10px; color: var(--text-dim); border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .form-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .form-row input,
+        .form-row select { flex: 1; background: #2b2b2b; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; }
+        .tag { background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; }
+        .hand-grid { display: grid; gap: 8px; }
+        .hand-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; align-items: center; }
+        .hand-row input { background: #2b2b2b; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; text-align: center; }
+        .history-list { display: grid; gap: 8px; }
+        .history-item { background: #232323; border: 1px solid #2f2f2f; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        .history-meta { display: flex; justify-content: space-between; color: var(--text-dim); margin-bottom: 6px; font-size: 0.8rem; }
+        .history-deltas { display: flex; flex-wrap: wrap; gap: 6px; }
+        .history-deltas span { background: #1b1b1b; border: 1px solid #2f2f2f; padding: 2px 6px; border-radius: 6px; }
+
+        @media (max-width: 720px) {
+            .players-grid { grid-template-columns: 1fr; }
+            .hand-row { grid-template-columns: 1fr; }
+            .form-row { flex-direction: column; align-items: stretch; }
+        }
     </style>
 </head>
 <body>
@@ -56,30 +83,75 @@
             </div>
     </div>
 
+    <div class="section">
+        <h2>Oyuncu Yonetimi</h2>
+        <div class="form-row">
+            <input type="text" id="playerNameInput" placeholder="Oyuncu adi">
+            <button class="btn" onclick="oyuncuEkle()">Ekle</button>
+        </div>
+        <div class="form-row">
+            <span class="tag" id="playerCount">0 oyuncu</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>El Kaydi</h2>
+        <div class="form-row">
+            <select id="winnerSelect"></select>
+            <select id="okeySelect"></select>
+            <select id="ciftSelect"></select>
+        </div>
+        <div class="form-row">
+            <button class="btn-sm" onclick="hepsineDegerYaz(101)">Hepsi 101</button>
+            <button class="btn-sm" onclick="kazananaDegerYaz(-101)">Kazanana -101</button>
+            <button class="btn-sm" onclick="seciliyeDegerYaz('okey', 202)">Okey 202</button>
+            <button class="btn-sm" onclick="seciliyeDegerYaz('cift', 10)">Cift 10</button>
+            <button class="btn-sm" onclick="girisleriTemizle()">Temizle</button>
+        </div>
+        <div class="hand-grid" id="handGrid"></div>
+        <div class="form-row">
+            <button class="btn" onclick="eliKaydet()">Eli Kaydet</button>
+            <button class="btn btn-ghost" onclick="sonEliGeriAl()">Son Eli Geri Al</button>
+        </div>
+    </div>
+
     <div class="players-grid" id="playersGrid">
         </div>
 
+    <div class="section">
+        <h2>El Gecmisi (Son 10)</h2>
+        <div class="history-list" id="historyList"></div>
+    </div>
+
     <script>
-        // Varsayilan oyuncu listesi (Istege gore isimleri degistirebilirsin)
-        let oyuncular = [
-            { id: 1, isim: "Oyuncu 1", skor: 0 },
-            { id: 2, isim: "Oyuncu 2", skor: 0 },
-            { id: 3, isim: "Oyuncu 3", skor: 0 },
-            { id: 4, isim: "Oyuncu 4", skor: 0 }
-        ];
+        const STORAGE_KEY = "okey_state";
+        const LEGACY_KEY = "okey_skorlar";
+        let durum = {
+            oyuncular: [
+                { id: 1, isim: "Oyuncu 1", skor: 0 },
+                { id: 2, isim: "Oyuncu 2", skor: 0 },
+                { id: 3, isim: "Oyuncu 3", skor: 0 },
+                { id: 4, isim: "Oyuncu 4", skor: 0 }
+            ],
+            gecmis: [],
+            sonrakiId: 5
+        };
 
         // Yerel hafizadan verileri yukle (Varsa)
-        if (localStorage.getItem("okey_skorlar")) {
-            oyuncular = JSON.parse(localStorage.getItem("okey_skorlar"));
+        if (localStorage.getItem(STORAGE_KEY)) {
+            durum = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        } else if (localStorage.getItem(LEGACY_KEY)) {
+            durum.oyuncular = JSON.parse(localStorage.getItem(LEGACY_KEY));
+            durum.sonrakiId = Math.max(...durum.oyuncular.map(o => o.id)) + 1;
         }
 
         function verileriKaydet() {
-            localStorage.setItem("okey_skorlar", JSON.stringify(oyuncular));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(durum));
             arayuzuGuncelle();
         }
 
         function skorEkle(id, miktar) {
-            const oyuncu = oyuncular.find(o => o.id === id);
+            const oyuncu = durum.oyuncular.find(o => o.id === id);
             if (oyuncu) {
                 oyuncu.skor += parseInt(miktar) || 0;
                 verileriKaydet();
@@ -97,19 +169,119 @@
 
         function sifirla() {
             if (confirm("Tum skorlari sifirlamak istedigine emin misin?")) {
-                oyuncular.forEach(o => o.skor = 0);
+                durum.oyuncular.forEach(o => o.skor = 0);
+                durum.gecmis = [];
                 verileriKaydet();
             }
+        }
+
+        function oyuncuEkle() {
+            const input = document.getElementById("playerNameInput");
+            const isim = input.value.trim();
+            if (!isim) return;
+            durum.oyuncular.push({ id: durum.sonrakiId++, isim, skor: 0 });
+            input.value = "";
+            verileriKaydet();
+        }
+
+        function oyuncuSil(id) {
+            if (!confirm("Oyuncuyu silmek istedigine emin misin?")) return;
+            durum.oyuncular = durum.oyuncular.filter(o => o.id !== id);
+            durum.gecmis = durum.gecmis.map(el => {
+                const kopya = { ...el, deltas: { ...el.deltas } };
+                delete kopya.deltas[id];
+                return kopya;
+            });
+            verileriKaydet();
+        }
+
+        function oyuncuAdiGuncelle(id, yeniIsim) {
+            const oyuncu = durum.oyuncular.find(o => o.id === id);
+            if (oyuncu) {
+                oyuncu.isim = yeniIsim.trim() || oyuncu.isim;
+                verileriKaydet();
+            }
+        }
+
+        function hepsineDegerYaz(deger) {
+            durum.oyuncular.forEach(o => {
+                const input = document.getElementById(`hand-${o.id}`);
+                if (input) input.value = deger;
+            });
+        }
+
+        function kazananaDegerYaz(deger) {
+            const winnerId = parseInt(document.getElementById("winnerSelect").value);
+            if (!winnerId) return;
+            const input = document.getElementById(`hand-${winnerId}`);
+            if (input) input.value = deger;
+        }
+
+        function seciliyeDegerYaz(tur, deger) {
+            const selectId = tur === "okey" ? "okeySelect" : "ciftSelect";
+            const seciliId = parseInt(document.getElementById(selectId).value);
+            if (!seciliId) return;
+            const input = document.getElementById(`hand-${seciliId}`);
+            if (input) input.value = deger;
+        }
+
+        function girisleriTemizle() {
+            durum.oyuncular.forEach(o => {
+                const input = document.getElementById(`hand-${o.id}`);
+                if (input) input.value = "";
+            });
+        }
+
+        function eliKaydet() {
+            const deltas = {};
+            let toplamDeger = 0;
+            durum.oyuncular.forEach(o => {
+                const input = document.getElementById(`hand-${o.id}`);
+                const deger = parseInt(input ? input.value : 0) || 0;
+                if (deger !== 0) {
+                    deltas[o.id] = deger;
+                    toplamDeger += Math.abs(deger);
+                }
+            });
+
+            if (toplamDeger === 0) return;
+
+            Object.keys(deltas).forEach(id => {
+                const oyuncu = durum.oyuncular.find(o => o.id === parseInt(id));
+                if (oyuncu) oyuncu.skor += deltas[id];
+            });
+
+            const el = {
+                id: Date.now(),
+                tarih: new Date().toISOString(),
+                deltas
+            };
+            durum.gecmis.unshift(el);
+            if (durum.gecmis.length > 50) durum.gecmis.pop();
+            girisleriTemizle();
+            verileriKaydet();
+        }
+
+        function sonEliGeriAl() {
+            const sonEl = durum.gecmis.shift();
+            if (!sonEl) return;
+            Object.keys(sonEl.deltas).forEach(id => {
+                const oyuncu = durum.oyuncular.find(o => o.id === parseInt(id));
+                if (oyuncu) oyuncu.skor -= sonEl.deltas[id];
+            });
+            verileriKaydet();
         }
 
         function arayuzuGuncelle() {
             // 1. Oyuncu Kartlarini Olustur/Guncelle
             const grid = document.getElementById("playersGrid");
             grid.innerHTML = "";
-            oyuncular.forEach(o => {
+            durum.oyuncular.forEach(o => {
                 grid.innerHTML += `
                     <div class="player-card">
-                        <div class="player-name">${o.isim}</div>
+                        <div class="player-name">
+                            <input type="text" value="${o.isim}" onchange="oyuncuAdiGuncelle(${o.id}, this.value)">
+                        </div>
                         <div class="player-score">${o.skor} p</div>
                         <div class="quick-actions">
                             <button class="btn-sm" onclick="skorEkle(${o.id}, -101)">-101 (Bit)</button>
@@ -121,12 +293,15 @@
                             <input type="number" id="input-${o.id}" placeholder="Sayi">
                             <button class="btn-sm" style="background:var(--accent); color:#000;" onclick="inputtanEkle(${o.id})">Ekle</button>
                         </div>
+                        <div class="player-actions">
+                            <button class="btn-sm btn-ghost" onclick="oyuncuSil(${o.id})">Sil</button>
+                        </div>
                     </div>
                 `;
             });
 
             // 2. Dashboard Siralamasini Guncelle (Kopyasini alip siraliyoruz ki orijinal sira bozulmasin)
-            const siraliListe = [...oyuncular].sort((a, b) => a.skor - b.skor);
+            const siraliListe = [...durum.oyuncular].sort((a, b) => a.skor - b.skor);
             const leaderboard = document.getElementById("leaderboard");
             leaderboard.innerHTML = "";
             siraliListe.forEach((o, index) => {
@@ -137,6 +312,61 @@
                     </div>
                 `;
             });
+
+            // 3. Oyuncu sayisi ve secimler
+            const playerCount = document.getElementById("playerCount");
+            playerCount.textContent = `${durum.oyuncular.length} oyuncu`;
+
+            const winnerSelect = document.getElementById("winnerSelect");
+            const okeySelect = document.getElementById("okeySelect");
+            const ciftSelect = document.getElementById("ciftSelect");
+
+            const optionList = durum.oyuncular.map(o => `<option value="${o.id}">${o.isim}</option>`).join("");
+            winnerSelect.innerHTML = `<option value="">Bitiren</option>${optionList}`;
+            okeySelect.innerHTML = `<option value="">Okey</option>${optionList}`;
+            ciftSelect.innerHTML = `<option value="">Cift</option>${optionList}`;
+
+            // 4. El giris grid'i
+            const handGrid = document.getElementById("handGrid");
+            handGrid.innerHTML = "";
+            durum.oyuncular.forEach(o => {
+                handGrid.innerHTML += `
+                    <div class="hand-row">
+                        <div>${o.isim}</div>
+                        <input type="number" id="hand-${o.id}" placeholder="0">
+                    </div>
+                `;
+            });
+
+            // 5. El gecmisi
+            const historyList = document.getElementById("historyList");
+            historyList.innerHTML = "";
+            const sonEller = durum.gecmis.slice(0, 10);
+            if (sonEller.length === 0) {
+                historyList.innerHTML = `<div class="history-item">Henuz el kaydi yok.</div>`;
+            } else {
+                sonEller.forEach((el, index) => {
+                    const tarih = new Date(el.tarih);
+                    const baslik = `El #${durum.gecmis.length - index}`;
+                    const zaman = `${tarih.getHours().toString().padStart(2, "0")}:${tarih.getMinutes().toString().padStart(2, "0")}`;
+                    const deltas = Object.keys(el.deltas).map(id => {
+                        const oyuncu = durum.oyuncular.find(o => o.id === parseInt(id));
+                        const isim = oyuncu ? oyuncu.isim : "Silinmis";
+                        const deger = el.deltas[id];
+                        const isaret = deger > 0 ? "+" : "";
+                        return `<span>${isim} ${isaret}${deger}</span>`;
+                    }).join("");
+                    historyList.innerHTML += `
+                        <div class="history-item">
+                            <div class="history-meta">
+                                <span>${baslik}</span>
+                                <span>${zaman}</span>
+                            </div>
+                            <div class="history-deltas">${deltas}</div>
+                        </div>
+                    `;
+                });
+            }
         }
 
         // PWA icin Service Worker Kaydi (Cevrimdisi calisabilmesi icin)
