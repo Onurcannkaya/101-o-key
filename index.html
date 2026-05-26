@@ -249,64 +249,80 @@
       animation: fadeIn 0.3s ease;
     }
 
-    /* Round Tracker Component */
-    .round-tracker-card {
+    /* Dashboard: Leaderboard Section */
+    .dashboard {
       background: var(--bg-card);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
-      border-left: 4px solid var(--accent-gold);
-      border-radius: 16px;
-      padding: 14px 18px;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .dashboard-header-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-      animation: fadeIn 0.3s ease;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .round-tracker-left {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .round-tracker-label {
-      font-size: 0.65rem;
+    .section-title {
+      font-size: 0.85rem;
       font-weight: 700;
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .round-tracker-text {
-      font-size: 1.15rem;
+    .section-title svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Embedded Round Tracker Header Component */
+    .round-tracker-inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
       font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: 0.3px;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
     }
 
     .round-glow {
       color: var(--accent-gold);
       text-shadow: 0 0 10px var(--accent-gold-glow);
-      font-size: 1.3rem;
+      font-size: 1.05rem;
       font-weight: 800;
     }
 
-    .round-tracker-right {
+    .round-btn-group {
       display: flex;
-      gap: 8px;
+      gap: 4px;
       align-items: center;
     }
 
     .btn-round-adjust {
-      width: 34px;
-      height: 34px;
+      width: 24px;
+      height: 24px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
       color: var(--text-primary);
-      border-radius: 8px;
-      font-size: 1.2rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -322,35 +338,6 @@
 
     .btn-round-adjust:active {
       transform: scale(0.9);
-    }
-
-    /* Dashboard: Leaderboard Section */
-    .dashboard {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    .section-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .section-title svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
     }
 
     .leaderboard-list {
@@ -643,17 +630,29 @@
       margin-top: 4px;
     }
 
-    /* Modifier buttons: Large touch zones */
+    /* Modifier buttons: Balanced Double Row Layout */
     .modifier-group {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
+      flex-direction: column;
       gap: 8px;
       margin-bottom: 14px;
     }
 
+    .modifier-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .modifier-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
     .btn-mod {
-      height: 44px;
-      font-size: 0.95rem;
+      height: 42px;
+      font-size: 0.9rem;
       border-radius: 12px;
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.04);
@@ -672,6 +671,16 @@
     }
     .btn-minus-101:hover {
       background: rgba(0, 230, 118, 0.16);
+      box-shadow: 0 0 10px var(--success-glow);
+    }
+
+    .btn-minus-100 {
+      background: rgba(0, 230, 118, 0.07);
+      border: 1px solid rgba(0, 230, 118, 0.2);
+      color: var(--success-green);
+    }
+    .btn-minus-100:hover {
+      background: rgba(0, 230, 118, 0.14);
       box-shadow: 0 0 10px var(--success-glow);
     }
 
@@ -806,75 +815,6 @@
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-    }
-
-    .select-tile {
-      height: 28px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
-      color: var(--text-primary);
-      padding: 0 8px;
-      font-family: inherit;
-      font-size: 0.8rem;
-      outline: none;
-      cursor: pointer;
-      min-width: 60px;
-      text-align: center;
-    }
-
-    .select-tile:focus {
-      border-color: var(--accent-gold);
-    }
-
-    .segmented-control {
-      display: flex;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 6px;
-      padding: 2px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      flex: 1;
-      max-width: 140px;
-    }
-
-    .btn-segment {
-      flex: 1;
-      height: 24px;
-      border-radius: 4px;
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      font-family: inherit;
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-segment.is-active {
-      background: var(--accent-gold-gradient);
-      color: #000;
-      font-weight: 700;
-      box-shadow: 0 1px 4px rgba(255, 152, 0, 0.2);
-    }
-
-    .btn-penalty-apply {
-      height: 30px;
-      width: 100%;
-      background: var(--accent-gold-gradient);
-      color: #000;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border-radius: 6px;
-      margin-top: 2px;
-      box-shadow: 0 2px 6px var(--accent-gold-glow);
-    }
-
-    .btn-penalty-apply:hover {
-      box-shadow: 0 2px 10px rgba(255, 152, 0, 0.35);
     }
 
     /* Round History Log inside card */
@@ -1041,9 +981,6 @@
       .modifier-group {
         gap: 10px;
       }
-      .btn-mod {
-        height: 42px;
-      }
     }
     
     @keyframes fadeIn {
@@ -1110,29 +1047,27 @@
       İnternet bağlantısı yok. Çevrimdışı çalışılıyor.
     </div>
 
-    <!-- Dynamic Round Tracker Card -->
-    <div class="round-tracker-card">
-      <div class="round-tracker-left">
-        <span class="round-tracker-label">EL TAKİBİ</span>
-        <div class="round-tracker-text">
-          <span id="roundDisplay" class="round-glow">1</span>. EL OYNANIYOR
-        </div>
-      </div>
-      <div class="round-tracker-right">
-        <button class="btn btn-round-adjust" onclick="adjustRound(-1)" title="El Sayısını Azalt">−</button>
-        <button class="btn btn-round-adjust" onclick="adjustRound(1)" title="El Sayısını Artır">+</button>
-      </div>
-    </div>
-
     <!-- Live Leaderboard Section -->
     <section class="dashboard">
-      <div class="section-title">
-        <!-- SVG Chart Logo -->
-        <svg viewBox="0 0 24 24">
-          <path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z"/>
-        </svg>
-        Anlık Durum
+      <div class="dashboard-header-row">
+        <div class="section-title">
+          <!-- SVG Chart Logo -->
+          <svg viewBox="0 0 24 24">
+            <path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z"/>
+          </svg>
+          Anlık Durum
+        </div>
+        
+        <!-- Embedded Round Tracker -->
+        <div class="round-tracker-inline">
+          <span id="roundDisplay" class="round-glow">1</span>. EL OYNANIYOR
+          <div class="round-btn-group">
+            <button class="btn-round-adjust" onclick="adjustRound(-1)" title="El Sayısını Azalt">−</button>
+            <button class="btn-round-adjust" onclick="adjustRound(1)" title="El Sayısını Artır">+</button>
+          </div>
+        </div>
       </div>
+      
       <div id="leaderboard" class="leaderboard-list">
         <!-- Rendered Dynamically -->
       </div>
@@ -1202,15 +1137,13 @@
     // App State Configuration
     let state = {
       teams: [],
-      currentRound: 1,
-      history: [] // Global Undo State Stack (snapshots of {teams, currentRound})
+      mevcutEl: 1,
+      history: [] // Global Undo State Stack (snapshots of {teams, mevcutEl})
     };
 
     // Transient UI states for collapsible panels (prevents resets on re-render)
     let uiState = {
-      activePanels: {},  // teamId -> boolean (true if open)
-      selectedTiles: {}, // teamId -> tile number (1-13)
-      openTypes: {}      // teamId -> 'straight' or 'double'
+      activePanels: {}  // teamId -> boolean (true if open)
     };
 
     // DOM Elements Cache
@@ -1237,12 +1170,6 @@
       if (uiState.activePanels[teamId] === undefined) {
         uiState.activePanels[teamId] = false;
       }
-      if (uiState.selectedTiles[teamId] === undefined) {
-        uiState.selectedTiles[teamId] = 1;
-      }
-      if (uiState.openTypes[teamId] === undefined) {
-        uiState.openTypes[teamId] = 'straight'; // 'straight' (Düz) or 'double' (Çift)
-      }
     }
 
     // ==========================================
@@ -1251,21 +1178,21 @@
 
     // Save state to Local Storage
     function saveState() {
-      localStorage.setItem('okey_eşli_skor_state_v3', JSON.stringify({
+      localStorage.setItem('okey_eşli_skor_state_v4', JSON.stringify({
         teams: state.teams,
-        currentRound: state.currentRound,
+        mevcutEl: state.mevcutEl,
         history: state.history
       }));
     }
 
     // Load state from Local Storage or Initialize
     function loadState() {
-      const saved = localStorage.getItem('okey_eşli_skor_state_v3');
+      const saved = localStorage.getItem('okey_eşli_skor_state_v4');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
           state.teams = parsed.teams || [];
-          state.currentRound = parsed.currentRound !== undefined ? parsed.currentRound : 1;
+          state.mevcutEl = parsed.mevcutEl !== undefined ? parsed.mevcutEl : 1;
           state.history = parsed.history || [];
         } catch (e) {
           console.error("Local storage parse error, resetting...", e);
@@ -1285,7 +1212,7 @@
         score: 0,
         history: [] // score changes for this team
       }));
-      state.currentRound = 1;
+      state.mevcutEl = 1;
       state.history = [];
       saveState();
     }
@@ -1296,7 +1223,7 @@
       const teamsClone = JSON.parse(JSON.stringify(state.teams));
       state.history.push({
         teams: teamsClone,
-        currentRound: state.currentRound
+        mevcutEl: state.mevcutEl
       });
       
       // Limit global undo states to 40 entries
@@ -1312,7 +1239,7 @@
       // Pop last state and restore
       const lastState = state.history.pop();
       state.teams = lastState.teams;
-      state.currentRound = lastState.currentRound;
+      state.mevcutEl = lastState.mevcutEl;
       
       triggerHaptic('medium');
       saveState();
@@ -1326,14 +1253,12 @@
         t.score = 0;
         t.history = [];
       });
-      state.currentRound = 1;
+      state.mevcutEl = 1;
       
       // Reset expanded drawers
       state.teams.forEach(t => {
         initUiState(t.id);
         uiState.activePanels[t.id] = false;
-        uiState.selectedTiles[t.id] = 1;
-        uiState.openTypes[t.id] = 'straight';
       });
 
       saveState();
@@ -1352,10 +1277,12 @@
         team.score += amount;
         team.history.push(amount);
         
-        // Auto increment round if hand is finished (-101)
+        // Auto increment round ONLY if hand is finished with -101
         if (amount === -101) {
-          state.currentRound += 1;
+          state.mevcutEl += 1;
           triggerHaptic('success');
+        } else if (amount === -100) {
+          triggerHaptic('success'); // Rekor trigger (does NOT increment round)
         } else if (amount === 202) {
           triggerHaptic('warning');
         } else {
@@ -1397,10 +1324,10 @@
 
     // Manual Round adjustments (+ / -)
     window.adjustRound = function(diff) {
-      if (state.currentRound + diff < 1) return; // Prevent less than 1
+      if (state.mevcutEl + diff < 1) return; // Prevent less than 1
       
       pushToHistory();
-      state.currentRound += diff;
+      state.mevcutEl += diff;
       
       triggerHaptic('light');
       saveState();
@@ -1437,36 +1364,30 @@
       render();
     };
 
-    window.handleTileChange = function(teamId, value) {
-      initUiState(teamId);
-      uiState.selectedTiles[teamId] = parseInt(value, 10);
-    };
-
-    window.setOpenType = function(teamId, type) {
-      initUiState(teamId);
-      uiState.openTypes[teamId] = type;
-      triggerHaptic('light');
-      render();
-    };
-
     window.applySideTilePenalty = function(teamId) {
-      initUiState(teamId);
-      const tileVal = uiState.selectedTiles[teamId];
-      const type = uiState.openTypes[teamId];
+      const input = document.getElementById(`penalty-input-${teamId}`);
+      if (!input) return;
 
-      // Multiplier rule: Straight = x10, Double = x2
-      const multiplier = type === 'straight' ? 10 : 2;
-      const penalty = tileVal * multiplier;
+      const val = parseInt(input.value, 10);
+      if (isNaN(val) || val === 0) {
+        input.focus();
+        return;
+      }
 
-      // Add to shared scores
-      updateScore(teamId, penalty);
+      // Add custom computed score directly
+      updateScore(teamId, val);
 
-      // Reset panel state for this team
+      // Reset panel input and close drawer
+      input.value = '';
       uiState.activePanels[teamId] = false;
-      uiState.selectedTiles[teamId] = 1;
-      uiState.openTypes[teamId] = 'straight';
 
       render();
+    };
+
+    window.handlePenaltyInputKey = function(event, teamId) {
+      if (event.key === 'Enter') {
+        applySideTilePenalty(teamId);
+      }
     };
 
     // ==========================================
@@ -1493,11 +1414,11 @@
       }
     }
 
-    // Render Round Tracker display
+    // Render Round Tracker display inside dynamic header
     function renderRoundTracker() {
       const display = document.getElementById('roundDisplay');
       if (display) {
-        display.innerText = state.currentRound;
+        display.innerText = state.mevcutEl;
       }
     }
 
@@ -1566,21 +1487,9 @@
         // Fetch transient UI state variables for the side tile panel
         initUiState(team.id);
         const isPanelOpen = uiState.activePanels[team.id];
-        const selectedTile = uiState.selectedTiles[team.id];
-        const openType = uiState.openTypes[team.id];
 
         const panelOpenClass = isPanelOpen ? 'is-open' : '';
         const panelDisplayStyle = isPanelOpen ? 'flex' : 'none';
-
-        const segmentStraightActive = openType === 'straight' ? 'is-active' : '';
-        const segmentDoubleActive = openType === 'double' ? 'is-active' : '';
-
-        // Draw 1-13 options dynamically
-        let selectOptionsHTML = '';
-        for (let i = 1; i <= 13; i++) {
-          const isSelected = i === selectedTile ? 'selected' : '';
-          selectOptionsHTML += `<option value="${i}" ${isSelected}>${i}</option>`;
-        }
 
         // Build history log tags
         let historyTagsHTML = '';
@@ -1636,10 +1545,17 @@
 
           <div>
             <div class="modifier-group">
-              <button class="btn btn-mod btn-minus-101" onclick="updateScore(${team.id}, -101)">-101 (Bit)</button>
-              <button class="btn btn-mod btn-plus-101" onclick="updateScore(${team.id}, 101)">+101</button>
-              <button class="btn btn-mod btn-plus-202" onclick="updateScore(${team.id}, 202)">+202</button>
-              <button class="btn btn-mod btn-plus-10" onclick="updateScore(${team.id}, 10)">+10</button>
+              <!-- Row 1: Deductions (Green theme) -->
+              <div class="modifier-row">
+                <button class="btn btn-mod btn-minus-101" onclick="updateScore(${team.id}, -101)">-101 (Bit)</button>
+                <button class="btn btn-mod btn-minus-100" onclick="updateScore(${team.id}, -100)">-100 (Rekor)</button>
+              </div>
+              <!-- Row 2: Additions -->
+              <div class="modifier-row-3">
+                <button class="btn btn-mod btn-plus-101" onclick="updateScore(${team.id}, 101)">+101</button>
+                <button class="btn btn-mod btn-plus-202" onclick="updateScore(${team.id}, 202)">+202</button>
+                <button class="btn btn-mod btn-plus-10" onclick="updateScore(${team.id}, 10)">+10</button>
+              </div>
             </div>
 
             <div class="input-group">
@@ -1661,22 +1577,22 @@
               Yandan Taş Alındı
             </button>
 
-            <!-- Collapsible Panel Drawer -->
+            <!-- Collapsible Panel Drawer (Simplified Manual Entry) -->
             <div class="penalty-panel" style="display: ${panelDisplayStyle}">
-              <div class="penalty-panel-row">
-                <span class="penalty-panel-label">Alınan Taş:</span>
-                <select class="select-tile" onchange="handleTileChange(${team.id}, this.value)">
-                  ${selectOptionsHTML}
-                </select>
-              </div>
-              <div class="penalty-panel-row">
-                <span class="penalty-panel-label">Açış Türü:</span>
-                <div class="segmented-control">
-                  <button class="btn-segment ${segmentStraightActive}" onclick="setOpenType(${team.id}, 'straight')">Düz (x10)</button>
-                  <button class="btn-segment ${segmentDoubleActive}" onclick="setOpenType(${team.id}, 'double')">Çift (x2)</button>
+              <div class="penalty-panel-row" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                <span class="penalty-panel-label" style="text-align: left; margin-bottom: 2px;">Ceza Puanı Yaz:</span>
+                <div style="display: flex; gap: 8px; width: 100%;">
+                  <input type="number" 
+                         class="num-input" 
+                         id="penalty-input-${team.id}" 
+                         placeholder="Puanı girin..." 
+                         pattern="[0-9]*" 
+                         inputmode="numeric"
+                         onkeydown="handlePenaltyInputKey(event, ${team.id})"
+                         style="height: 38px;">
+                  <button class="btn btn-add" style="height: 38px; padding: 0 16px;" onclick="applySideTilePenalty(${team.id})">Ekle</button>
                 </div>
               </div>
-              <button class="btn btn-penalty-apply" onclick="applySideTilePenalty(${team.id})">Cezayı Uygula</button>
             </div>
 
             ${historyTagsHTML}
