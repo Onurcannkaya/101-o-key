@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>101 Skorboard</title>
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22101%20Skorboard%22,%22short_name%22:%22101Skor%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23121212%22,%22theme_color%22:%22%231e1e1e%22}">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #ff9800;
+            --text: #ffffff;
+            --text-dim: #b3b3b3;
+            --danger: #ef5350;
+            --success: #4caf50;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text); padding: 15px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h1 { font-size: 1.5rem; color: var(--accent); }
+        .btn { background: var(--accent); border: none; padding: 10px 15px; color: #000; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-danger { background: var(--danger); color: #fff; }
+
+        /* Dashboard / Siralama */
+        .dashboard { background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .dashboard h2 { font-size: 1.1rem; margin-bottom: 10px; color: var(--text-dim); border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .leaderboard-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 1.1rem; }
+        .leaderboard-row:first-of-type { color: var(--success); font-weight: bold; }
+        .leaderboard-row:last-of-type { color: var(--danger); }
+
+        /* Oyuncu Kartlari Giris Alani */
+        .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .player-card { background: var(--card-bg); padding: 15px; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .player-name { font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .player-score { font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+
+        .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .btn-sm { background: #333; color: #fff; border: none; padding: 8px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; }
+        .btn-sm:active { background: var(--accent); color: #000; }
+
+        .manual-input { display: flex; gap: 5px; margin-top: 5px; }
+        .manual-input input { flex: 1; background: #2b2b2b; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; text-align: center; width: 50px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📳 101 Canli Skor</h1>
+        <button class="btn btn-danger" onclick="sifirla()">Sifirla</button>
+    </header>
+
+    <div class="dashboard">
+        <h2>Anlik Durum (Az Sayi Yiyen Ustte)</h2>
+        <div id="leaderboard">
+            </div>
+    </div>
+
+    <div class="players-grid" id="playersGrid">
+        </div>
+
+    <script>
+        // Varsayilan oyuncu listesi (Istege gore isimleri degistirebilirsin)
+        let oyuncular = [
+            { id: 1, isim: "Oyuncu 1", skor: 0 },
+            { id: 2, isim: "Oyuncu 2", skor: 0 },
+            { id: 3, isim: "Oyuncu 3", skor: 0 },
+            { id: 4, isim: "Oyuncu 4", skor: 0 }
+        ];
+
+        // Yerel hafizadan verileri yukle (Varsa)
+        if (localStorage.getItem("okey_skorlar")) {
+            oyuncular = JSON.parse(localStorage.getItem("okey_skorlar"));
+        }
+
+        function verileriKaydet() {
+            localStorage.setItem("okey_skorlar", JSON.stringify(oyuncular));
+            arayuzuGuncelle();
+        }
+
+        function skorEkle(id, miktar) {
+            const oyuncu = oyuncular.find(o => o.id === id);
+            if (oyuncu) {
+                oyuncu.skor += parseInt(miktar) || 0;
+                verileriKaydet();
+            }
+        }
+
+        function inputtanEkle(id) {
+            const input = document.getElementById(`input-${id}`);
+            const deger = parseInt(input.value);
+            if (!isNaN(deger)) {
+                skorEkle(id, deger);
+                input.value = ""; // Giristen sonra temizle
+            }
+        }
+
+        function sifirla() {
+            if (confirm("Tum skorlari sifirlamak istedigine emin misin?")) {
+                oyuncular.forEach(o => o.skor = 0);
+                verileriKaydet();
+            }
+        }
+
+        function arayuzuGuncelle() {
+            // 1. Oyuncu Kartlarini Olustur/Guncelle
+            const grid = document.getElementById("playersGrid");
+            grid.innerHTML = "";
+            oyuncular.forEach(o => {
+                grid.innerHTML += `
+                    <div class="player-card">
+                        <div class="player-name">${o.isim}</div>
+                        <div class="player-score">${o.skor} p</div>
+                        <div class="quick-actions">
+                            <button class="btn-sm" onclick="skorEkle(${o.id}, -101)">-101 (Bit)</button>
+                            <button class="btn-sm" onclick="skorEkle(${o.id}, 101)">+101</button>
+                            <button class="btn-sm" onclick="skorEkle(${o.id}, 202)">+202 (Okey)</button>
+                            <button class="btn-sm" onclick="skorEkle(${o.id}, 10)">+10 (Cift)</button>
+                        </div>
+                        <div class="manual-input">
+                            <input type="number" id="input-${o.id}" placeholder="Sayi">
+                            <button class="btn-sm" style="background:var(--accent); color:#000;" onclick="inputtanEkle(${o.id})">Ekle</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 2. Dashboard Siralamasini Guncelle (Kopyasini alip siraliyoruz ki orijinal sira bozulmasin)
+            const siraliListe = [...oyuncular].sort((a, b) => a.skor - b.skor);
+            const leaderboard = document.getElementById("leaderboard");
+            leaderboard.innerHTML = "";
+            siraliListe.forEach((o, index) => {
+                leaderboard.innerHTML += `
+                    <div class="leaderboard-row">
+                        <span>${index + 1}. ${o.isim}</span>
+                        <span>${o.skor} p</span>
+                    </div>
+                `;
+            });
+        }
+
+        // PWA icin Service Worker Kaydi (Cevrimdisi calisabilmesi icin)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript,self.addEventListener("fetch",()=>{} )', {type: 'module'});
+            });
+        }
+
+        // Ilk acilista ekrani doldur
+        arayuzuGuncelle();
+    </script>
+</body>
+</html>
